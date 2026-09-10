@@ -1,0 +1,51 @@
+plugins {
+    id 'org.springframework.boot' version '4.1.1' apply false
+    id 'io.spring.dependency-management' version '1.1.7' apply false
+}
+
+allprojects {
+    group = 'com.ai.poc.ts'
+    version = '0.0.1-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
+
+    ext {
+        set('springAiVersion', '2.0.1')
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
+        }
+    }
+
+    tasks.named('test') {
+        useJUnitPlatform()
+    }
+}
+
+tasks.register('classes') {
+    group = 'build'
+    description = 'Compiles classes for all application modules.'
+    dependsOn subprojects.collect { it.tasks.named('classes') }
+}
+
+tasks.register('testClasses') {
+    group = 'verification'
+    description = 'Compiles test classes for all application modules.'
+    dependsOn subprojects.collect { it.tasks.named('testClasses') }
+}

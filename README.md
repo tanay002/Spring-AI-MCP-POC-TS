@@ -1,1 +1,0 @@
-# Spring-AI-MCP-POC-TS
